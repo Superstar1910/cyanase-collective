@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import RequireRole from './auth/RequireRole'
+import { useAuth } from './auth/AuthContext'
 import { navTabs, type TabKey } from './constants/navTabs'
 import { getDashboardData, type DashboardData } from './data/api'
 import Community from './sections/Community'
@@ -16,6 +18,7 @@ type LoadState = {
 
 export default function App() {
   const [tab, setTab] = useState<TabKey>('overview')
+  const { user, setRole } = useAuth()
   const [state, setState] = useState<LoadState>({
     data: null,
     loading: true,
@@ -103,11 +106,39 @@ export default function App() {
               </button>
             ))}
           </div>
-          <button className="px-3 py-2 rounded-xl bg-brand-600 text-white text-sm shadow-sm">Add Funds</button>
+          <div className="flex items-center gap-4">
+            <div className="text-right text-xs text-slate-600">
+              <div className="font-semibold text-slate-800">{user.name}</div>
+              <div className="uppercase tracking-wide">{user.role}</div>
+            </div>
+            <label className="text-xs text-slate-600">
+              Role
+              <select
+                className="ml-2 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs"
+                value={user.role}
+                onChange={(event) => setRole(event.target.value as typeof user.role)}
+              >
+                <option value="member">Member</option>
+                <option value="admin">Admin</option>
+              </select>
+            </label>
+            <button className="px-3 py-2 rounded-xl bg-brand-600 text-white text-sm shadow-sm">Add Funds</button>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-8">{content}</main>
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        <RequireRole role="admin">
+          <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
+            <div className="font-semibold">Admin Controls</div>
+            <p className="text-sm text-amber-800">
+              This section is visible to admins only. Replace with real admin tooling when backend
+              authorization is wired.
+            </p>
+          </div>
+        </RequireRole>
+        {content}
+      </main>
 
       <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-500">
         Cyanase Collective (c) 2025 - Finance made social - Learn - Save - Invest - Together
