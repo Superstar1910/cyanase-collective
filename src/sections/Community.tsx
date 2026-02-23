@@ -1,3 +1,5 @@
+import type { CommunityPostItem, EngagementPoint } from '../data/dashboard'
+
 import {
   Bar,
   BarChart,
@@ -11,9 +13,13 @@ import {
 
 import CommunityPost from '../components/CommunityPost'
 import { chartTheme } from '../constants/chartTheme'
-import { communityPosts, engagement } from '../data/dashboard'
 
-export default function Community() {
+type CommunityProps = {
+  communityPosts: CommunityPostItem[]
+  engagement: EngagementPoint[]
+}
+
+export default function Community({ communityPosts, engagement }: CommunityProps) {
   return (
     <section>
       <h2 className="text-2xl font-semibold mb-4">Community</h2>

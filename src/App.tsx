@@ -1,14 +1,91 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { navTabs, type TabKey } from './constants/navTabs'
+import { getDashboardData, type DashboardData } from './data/api'
 import Community from './sections/Community'
 import Goals from './sections/Goals'
 import Investments from './sections/Investments'
 import Overview from './sections/Overview'
 import Wallet from './sections/Wallet'
 
+type LoadState = {
+  data: DashboardData | null
+  loading: boolean
+  error: string | null
+}
+
 export default function App() {
   const [tab, setTab] = useState<TabKey>('overview')
+  const [state, setState] = useState<LoadState>({
+    data: null,
+    loading: true,
+    error: null,
+  })
+
+  useEffect(() => {
+    let isMounted = true
+
+    const load = async () => {
+      const result = await getDashboardData()
+      if (!isMounted) return
+      setState({
+        data: result.data,
+        loading: false,
+        error: result.error,
+      })
+    }
+
+    load()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  const content = useMemo(() => {
+    if (state.loading) {
+      return (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
+          Loading dashboard data...
+        </div>
+      )
+    }
+
+    if (state.error || !state.data) {
+      return (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">
+          Unable to load dashboard data. Please try again.
+        </div>
+      )
+    }
+
+    return (
+      <>
+        {tab === 'overview' && (
+          <Overview
+            metrics={state.data.metrics}
+            allocation={state.data.allocation}
+            contributions={state.data.contributions}
+            goalProgress={state.data.goalProgress}
+          />
+        )}
+        {tab === 'wallet' && (
+          <Wallet balanceSeries={state.data.balanceSeries} transactions={state.data.transactions} />
+        )}
+        {tab === 'goals' && <Goals goals={state.data.goals} />}
+        {tab === 'investments' && (
+          <Investments
+            allocation={state.data.allocation}
+            investments={state.data.investments}
+            performance={state.data.performance}
+          />
+        )}
+        {tab === 'community' && (
+          <Community communityPosts={state.data.communityPosts} engagement={state.data.engagement} />
+        )}
+      </>
+    )
+  }, [state, tab])
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -30,13 +107,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        {tab === 'overview' && <Overview />}
-        {tab === 'wallet' && <Wallet />}
-        {tab === 'goals' && <Goals />}
-        {tab === 'investments' && <Investments />}
-        {tab === 'community' && <Community />}
-      </main>
+      <main className="max-w-6xl mx-auto px-4 py-8">{content}</main>
 
       <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-500">
         Cyanase Collective (c) 2025 - Finance made social - Learn - Save - Invest - Together

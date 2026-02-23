@@ -16,6 +16,7 @@
 - Dev: `npm run dev`
 - Build: `npm run build`
 - Preview: `npm run preview`
+- Test: `npm run test`
 
 ## Product Context
 - Prototype dashboard with tabs: Overview, Wallet, Goals, Investments, Community

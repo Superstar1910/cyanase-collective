@@ -1,7 +1,12 @@
-import GoalCard from '../components/GoalCard'
-import { goals } from '../data/dashboard'
+import type { GoalCardItem } from '../data/dashboard'
 
-export default function Goals() {
+import GoalCard from '../components/GoalCard'
+
+type GoalsProps = {
+  goals: GoalCardItem[]
+}
+
+export default function Goals({ goals }: GoalsProps) {
   return (
     <section>
       <h2 className="text-2xl font-semibold mb-4">Your Goals</h2>

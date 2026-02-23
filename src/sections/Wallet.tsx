@@ -1,3 +1,5 @@
+import type { BalancePoint, TransactionItem } from '../data/dashboard'
+
 import {
   CartesianGrid,
   Line,
@@ -9,9 +11,13 @@ import {
 } from 'recharts'
 
 import { chartTheme } from '../constants/chartTheme'
-import { balanceSeries, transactions } from '../data/dashboard'
 
-export default function Wallet() {
+type WalletProps = {
+  balanceSeries: BalancePoint[]
+  transactions: TransactionItem[]
+}
+
+export default function Wallet({ balanceSeries, transactions }: WalletProps) {
   return (
     <section>
       <h2 className="text-2xl font-semibold mb-4">Wallet</h2>

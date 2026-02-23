@@ -1,10 +1,14 @@
+import type {
+  AllocationSlice,
+  ContributionPoint,
+  GoalProgressItem,
+  Metric,
+} from '../data/dashboard'
+
 import {
   BarChart,
   Bar,
   CartesianGrid,
-  Legend,
-  LineChart,
-  Line,
   ResponsiveContainer,
   Tooltip as RTooltip,
   XAxis,
@@ -15,14 +19,15 @@ import AllocationPie from '../components/AllocationPie'
 import GoalProgress from '../components/GoalProgress'
 import MetricCard from '../components/MetricCard'
 import { chartTheme } from '../constants/chartTheme'
-import {
-  allocation,
-  contributions,
-  goalProgress,
-  metrics,
-} from '../data/dashboard'
 
-export default function Overview() {
+type OverviewProps = {
+  metrics: Metric[]
+  allocation: AllocationSlice[]
+  contributions: ContributionPoint[]
+  goalProgress: GoalProgressItem[]
+}
+
+export default function Overview({ metrics, allocation, contributions, goalProgress }: OverviewProps) {
   return (
     <section>
       <h2 className="text-2xl font-semibold mb-4">Your Dashboard</h2>

@@ -1,3 +1,9 @@
+import type {
+  AllocationSlice,
+  InvestmentItem,
+  PerformancePoint,
+} from '../data/dashboard'
+
 import {
   CartesianGrid,
   Line,
@@ -11,9 +17,14 @@ import {
 import AllocationPie from '../components/AllocationPie'
 import InvestmentCard from '../components/InvestmentCard'
 import { chartTheme } from '../constants/chartTheme'
-import { allocation, investments, performance } from '../data/dashboard'
 
-export default function Investments() {
+type InvestmentsProps = {
+  allocation: AllocationSlice[]
+  investments: InvestmentItem[]
+  performance: PerformancePoint[]
+}
+
+export default function Investments({ allocation, investments, performance }: InvestmentsProps) {
   return (
     <section>
       <h2 className="text-2xl font-semibold mb-4">Investments</h2>
