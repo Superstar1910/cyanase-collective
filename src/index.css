@@ -1,7 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root{
+:root {
   color-scheme: light;
+
+  --brand-50: 220 100% 98%;
+  --brand-100: 220 95% 94%;
+  --brand-200: 221 90% 88%;
+  --brand-500: 225 80% 60%;
+  --brand-600: 225 70% 53%;
+  --brand-700: 226 64% 45%;
+
+  --chart-grid: 220 18% 90%;
+  --chart-axis: 215 16% 60%;
+  --chart-text: 222 18% 20%;
+  --chart-tooltip-bg: 0 0% 100%;
+  --chart-tooltip-border: 220 18% 85%;
+  --chart-series-1: 225 70% 53%;
+  --chart-series-2: 190 85% 40%;
+  --chart-series-3: 35 90% 55%;
+  --chart-series-4: 260 65% 65%;
+}
+
+@layer base {
+  body {
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+  }
 }
