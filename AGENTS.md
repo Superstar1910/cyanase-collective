@@ -21,7 +21,7 @@
 - Prototype dashboard with tabs: Overview, Wallet, Goals, Investments, Community
 - Charts: portfolio allocation pie, monthly contributions bar, wallet balance line, performance line, community engagement bars
 - Data is mocked; keep mock data unless explicitly asked to wire APIs
-- Recharts uses default colors unless told to customize
+- Charts use a shared theme defined in `src/constants/chartTheme.ts`
 
 ## Code Style
 - Use TypeScript + React function components.

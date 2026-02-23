@@ -10,6 +10,7 @@ import {
 
 import AllocationPie from '../components/AllocationPie'
 import InvestmentCard from '../components/InvestmentCard'
+import { chartTheme } from '../constants/chartTheme'
 import { allocation, investments, performance } from '../data/dashboard'
 
 export default function Investments() {
@@ -38,11 +39,18 @@ export default function Investments() {
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={performance}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="m" />
-                <YAxis />
-                <RTooltip />
-                <Line type="monotone" dataKey="y" />
+                <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
+                <XAxis dataKey="m" tick={{ fill: chartTheme.axis }} axisLine={{ stroke: chartTheme.grid }} />
+                <YAxis tick={{ fill: chartTheme.axis }} axisLine={{ stroke: chartTheme.grid }} />
+                <RTooltip
+                  contentStyle={{
+                    backgroundColor: chartTheme.tooltipBg,
+                    borderColor: chartTheme.tooltipBorder,
+                    color: chartTheme.text,
+                  }}
+                  labelStyle={{ color: chartTheme.text }}
+                />
+                <Line type="monotone" dataKey="y" stroke={chartTheme.series[1]} strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>

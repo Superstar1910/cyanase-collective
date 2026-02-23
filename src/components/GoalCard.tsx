@@ -12,7 +12,7 @@ export default function GoalCard({ name, target, current, members }: GoalCardPro
       <p className="text-sm text-slate-600">Target: {target}</p>
       <p className="text-sm text-slate-600 mb-2">Current: {current}</p>
       <p className="text-xs text-slate-500">Members: {members}</p>
-      <button className="mt-3 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-sm">View Details</button>
+      <button className="mt-3 px-3 py-1.5 rounded-lg bg-brand-600 text-white text-sm">View Details</button>
     </div>
   )
 }

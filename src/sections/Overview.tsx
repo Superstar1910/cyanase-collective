@@ -14,6 +14,7 @@ import {
 import AllocationPie from '../components/AllocationPie'
 import GoalProgress from '../components/GoalProgress'
 import MetricCard from '../components/MetricCard'
+import { chartTheme } from '../constants/chartTheme'
 import {
   allocation,
   contributions,
@@ -50,11 +51,18 @@ export default function Overview() {
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={contributions}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="m" />
-                <YAxis />
-                <RTooltip />
-                <Bar dataKey="amt" />
+                <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
+                <XAxis dataKey="m" tick={{ fill: chartTheme.axis }} axisLine={{ stroke: chartTheme.grid }} />
+                <YAxis tick={{ fill: chartTheme.axis }} axisLine={{ stroke: chartTheme.grid }} />
+                <RTooltip
+                  contentStyle={{
+                    backgroundColor: chartTheme.tooltipBg,
+                    borderColor: chartTheme.tooltipBorder,
+                    color: chartTheme.text,
+                  }}
+                  labelStyle={{ color: chartTheme.text }}
+                />
+                <Bar dataKey="amt" fill={chartTheme.series[0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

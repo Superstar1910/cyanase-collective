@@ -14,19 +14,19 @@ export default function App() {
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <header className="sticky top-0 z-10 border-b border-slate-200 backdrop-blur bg-white/80">
         <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-          <h1 className="font-bold text-xl text-indigo-700">Cyanase Collective</h1>
+          <h1 className="font-bold text-xl text-brand-700">Cyanase Collective</h1>
           <div className="flex gap-6 text-sm">
             {navTabs.map((tabItem) => (
               <button
                 key={tabItem.key}
                 onClick={() => setTab(tabItem.key)}
-                className={`font-medium ${tab === tabItem.key ? 'text-indigo-700 border-b-2 border-indigo-700 pb-1' : 'text-slate-600 hover:text-slate-900'}`}
+                className={`font-medium ${tab === tabItem.key ? 'text-brand-700 border-b-2 border-brand-700 pb-1' : 'text-slate-600 hover:text-slate-900'}`}
               >
                 {tabItem.label}
               </button>
             ))}
           </div>
-          <button className="px-3 py-2 rounded-xl bg-indigo-600 text-white text-sm shadow-sm">Add Funds</button>
+          <button className="px-3 py-2 rounded-xl bg-brand-600 text-white text-sm shadow-sm">Add Funds</button>
         </div>
       </header>
 

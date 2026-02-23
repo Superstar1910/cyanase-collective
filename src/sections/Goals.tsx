@@ -19,7 +19,7 @@ export default function Goals() {
           />
         ))}
       </div>
-      <button className="mt-6 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm">+ New Goal</button>
+      <button className="mt-6 px-4 py-2 bg-brand-600 text-white rounded-xl text-sm">+ New Goal</button>
     </section>
   )
 }

@@ -10,6 +10,7 @@ import {
 } from 'recharts'
 
 import CommunityPost from '../components/CommunityPost'
+import { chartTheme } from '../constants/chartTheme'
 import { communityPosts, engagement } from '../data/dashboard'
 
 export default function Community() {
@@ -29,13 +30,20 @@ export default function Community() {
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={engagement}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="m" />
-              <YAxis />
+              <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
+              <XAxis dataKey="m" tick={{ fill: chartTheme.axis }} axisLine={{ stroke: chartTheme.grid }} />
+              <YAxis tick={{ fill: chartTheme.axis }} axisLine={{ stroke: chartTheme.grid }} />
               <Legend />
-              <RTooltip />
-              <Bar dataKey="posts" />
-              <Bar dataKey="badges" />
+              <RTooltip
+                contentStyle={{
+                  backgroundColor: chartTheme.tooltipBg,
+                  borderColor: chartTheme.tooltipBorder,
+                  color: chartTheme.text,
+                }}
+                labelStyle={{ color: chartTheme.text }}
+              />
+              <Bar dataKey="posts" fill={chartTheme.series[2]} />
+              <Bar dataKey="badges" fill={chartTheme.series[3]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

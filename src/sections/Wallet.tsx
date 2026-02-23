@@ -8,6 +8,7 @@ import {
   YAxis,
 } from 'recharts'
 
+import { chartTheme } from '../constants/chartTheme'
 import { balanceSeries, transactions } from '../data/dashboard'
 
 export default function Wallet() {
@@ -26,17 +27,24 @@ export default function Wallet() {
           <div className="text-xl font-bold">UGX 2,450,000</div>
         </div>
         <div className="flex gap-3 mb-4">
-          <button className="px-3 py-2 rounded-xl bg-indigo-600 text-white text-sm">Add Funds</button>
+          <button className="px-3 py-2 rounded-xl bg-brand-600 text-white text-sm">Add Funds</button>
           <button className="px-3 py-2 rounded-xl border border-slate-300 text-sm">Withdraw</button>
         </div>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={balanceSeries}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="d" />
-              <YAxis />
-              <RTooltip />
-              <Line type="monotone" dataKey="v" />
+              <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
+              <XAxis dataKey="d" tick={{ fill: chartTheme.axis }} axisLine={{ stroke: chartTheme.grid }} />
+              <YAxis tick={{ fill: chartTheme.axis }} axisLine={{ stroke: chartTheme.grid }} />
+              <RTooltip
+                contentStyle={{
+                  backgroundColor: chartTheme.tooltipBg,
+                  borderColor: chartTheme.tooltipBorder,
+                  color: chartTheme.text,
+                }}
+                labelStyle={{ color: chartTheme.text }}
+              />
+              <Line type="monotone" dataKey="v" stroke={chartTheme.series[0]} strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
