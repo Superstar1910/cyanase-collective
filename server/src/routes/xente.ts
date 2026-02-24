@@ -51,6 +51,11 @@ export async function registerXenteWebhookRoutes(server: import('fastify').Fasti
       if (ledger && ledger.status === 'pending') {
         await updateLedgerStatus(parsed.requestId, status)
 
+        await prisma.transaction.update({
+          where: { referenceId: parsed.requestId },
+          data: { status },
+        })
+
         if (status === 'succeeded') {
           const delta = ledger.type === 'collection' ? ledger.amount : -ledger.amount
           await applyWalletBalance(ledger.walletId, Number(delta))

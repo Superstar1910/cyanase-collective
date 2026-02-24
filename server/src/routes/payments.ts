@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { createLedgerEntry } from '../services/ledger'
+import { createLedgerEntry, ensureTransaction } from '../services/ledger'
 import prisma from '../db'
 import {
   getAccount,
@@ -37,6 +37,20 @@ async function getDefaultWalletId() {
   return wallet.id
 }
 
+async function ensureIdempotent(requestId: string, payload: { provider: string; type: string; amount: number }) {
+  const result = await ensureTransaction(requestId, {
+    provider: payload.provider,
+    type: payload.type,
+    status: 'pending',
+    amount: payload.amount,
+    currency: DEFAULT_WALLET_CURRENCY,
+  })
+
+  if (!result.created) {
+    throw new Error(`Duplicate requestId: ${requestId}`)
+  }
+}
+
 export async function registerPaymentRoutes(server: import('fastify').FastifyInstance) {
   server.get('/accounts', async () => getAccount())
 
@@ -48,6 +62,12 @@ export async function registerPaymentRoutes(server: import('fastify').FastifyIns
   server.post('/collections/mobile-money', async (request) => {
     const payload = CollectionSchema.parse(request.body)
     const walletId = await getDefaultWalletId()
+
+    await ensureIdempotent(payload.requestId, {
+      provider: 'xente',
+      type: 'collection',
+      amount: payload.amount,
+    })
 
     await createLedgerEntry({
       walletId,
@@ -67,6 +87,12 @@ export async function registerPaymentRoutes(server: import('fastify').FastifyIns
     const payload = PayoutSchema.parse(request.body)
     const walletId = await getDefaultWalletId()
 
+    await ensureIdempotent(payload.requestId, {
+      provider: 'xente',
+      type: 'payout',
+      amount: payload.amount,
+    })
+
     await createLedgerEntry({
       walletId,
       amount: payload.amount,
@@ -84,6 +110,12 @@ export async function registerPaymentRoutes(server: import('fastify').FastifyIns
   server.post('/payouts/bank', async (request) => {
     const payload = BankTransferSchema.parse(request.body)
     const walletId = await getDefaultWalletId()
+
+    await ensureIdempotent(payload.requestId, {
+      provider: 'xente',
+      type: 'payout',
+      amount: payload.amount,
+    })
 
     await createLedgerEntry({
       walletId,

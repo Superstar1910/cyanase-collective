@@ -45,3 +45,32 @@ export async function applyWalletBalance(walletId: string, delta: number) {
     },
   })
 }
+
+export async function ensureTransaction(referenceId: string, data: {
+  provider: string
+  type: string
+  status: string
+  amount: number
+  currency: string
+}) {
+  const existing = await prisma.transaction.findUnique({
+    where: { referenceId },
+  })
+
+  if (existing) {
+    return { transaction: existing, created: false }
+  }
+
+  const transaction = await prisma.transaction.create({
+    data: {
+      referenceId,
+      provider: data.provider,
+      type: data.type,
+      status: data.status,
+      amount: data.amount,
+      currency: data.currency,
+    },
+  })
+
+  return { transaction, created: true }
+}

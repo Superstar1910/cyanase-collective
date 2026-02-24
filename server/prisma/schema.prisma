@@ -45,6 +45,18 @@ model LedgerEntry {
   wallet        Wallet   @relation(fields: [walletId], references: [id])
 }
 
+model Transaction {
+  id          String   @id @default(uuid())
+  referenceId String   @unique
+  provider    String
+  type        String
+  status      String
+  amount      Decimal
+  currency    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model WebhookEvent {
   id          String   @id @default(uuid())
   provider    String
