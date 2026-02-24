@@ -1,5 +1,7 @@
 import type { FastifyInstance } from 'fastify'
 
+import prisma from '../db'
+
 const XENTE_IPS = new Set(['52.48.24.237', '34.252.29.119'])
 
 type XenteWebhookPayload = {
@@ -23,7 +25,14 @@ export async function registerXenteWebhookRoutes(server: FastifyInstance) {
 
     server.log.info({ payload }, 'Xente webhook received')
 
-    // TODO: persist webhook, update ledger, reconcile transaction
+    await prisma.webhookEvent.create({
+      data: {
+        provider: 'xente',
+        payload,
+      },
+    })
+
+    // TODO: update ledger + reconcile transaction using payload.requestId/transactionId
 
     return reply.code(200).send({ ok: true })
   })
