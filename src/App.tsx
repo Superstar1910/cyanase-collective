@@ -1,4 +1,4 @@
-import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/clerk-react'
+import { SignedIn, SignedOut, UserButton, useAuth, useUser } from '@clerk/clerk-react'
 import { useEffect, useMemo, useState } from 'react'
 
 import { navTabs, type TabKey } from './constants/navTabs'
@@ -24,6 +24,7 @@ export default function App() {
   const [view, setView] = useState<ViewMode>('landing')
   const [tab, setTab] = useState<TabKey>('overview')
   const { user } = useUser()
+  const { getToken, isLoaded, isSignedIn } = useAuth()
   const [state, setState] = useState<LoadState>({
     data: null,
     loading: true,
@@ -34,7 +35,8 @@ export default function App() {
     let isMounted = true
 
     const load = async () => {
-      const result = await getDashboardData()
+      const token = isSignedIn ? await getToken() : undefined
+      const result = await getDashboardData(token ?? undefined)
       if (!isMounted) return
       setState({
         data: result.data,
@@ -43,12 +45,14 @@ export default function App() {
       })
     }
 
-    load()
+    if (isLoaded) {
+      load()
+    }
 
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [getToken, isLoaded, isSignedIn])
 
   const content = useMemo(() => {
     if (state.loading) {
