@@ -6,6 +6,7 @@ import Community from './sections/Community'
 import Goals from './sections/Goals'
 import Investments from './sections/Investments'
 import Landing from './sections/Landing'
+import Login from './sections/Login'
 import Overview from './sections/Overview'
 import Wallet from './sections/Wallet'
 import RequireRole from './auth/RequireRole'
@@ -17,7 +18,7 @@ type LoadState = {
   error: string | null
 }
 
-type ViewMode = 'landing' | 'dashboard'
+type ViewMode = 'landing' | 'login' | 'dashboard'
 
 export default function App() {
   const [view, setView] = useState<ViewMode>('landing')
@@ -99,10 +100,14 @@ export default function App() {
   if (view === 'landing') {
     return (
       <Landing
-        onGetStarted={() => setView('dashboard')}
-        onSignIn={() => setView('dashboard')}
+        onGetStarted={() => setView('login')}
+        onSignIn={() => setView('login')}
       />
     )
+  }
+
+  if (view === 'login') {
+    return <Login onBack={() => setView('landing')} onSuccess={() => setView('dashboard')} />
   }
 
   return (
