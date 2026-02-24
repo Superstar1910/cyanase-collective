@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { createLedgerEntry } from '../services/ledger'
+import prisma from '../db'
 import {
   getAccount,
   postBankTransfer,
@@ -7,6 +9,11 @@ import {
   postMobileMoneyPayout,
   validateProduct,
 } from '../services/xenteClient'
+import {
+  BankTransferSchema,
+  CollectionSchema,
+  PayoutSchema,
+} from '../schemas/payments'
 
 const MobileMoneyValidationSchema = z.object({
   productItemId: z.string(),
@@ -15,45 +22,20 @@ const MobileMoneyValidationSchema = z.object({
   customerEmail: z.string().email(),
 })
 
-const MobileMoneyCollectionSchema = z.object({
-  requestId: z.string(),
-  batchId: z.string(),
-  amount: z.number().positive(),
-  message: z.string().optional(),
-  providerItemId: z.string(),
-  beneficiary: z.object({
-    name: z.string(),
-    email: z.string().email(),
-    phone: z.string(),
-  }),
-})
+const DEFAULT_WALLET_CURRENCY = 'UGX'
 
-const MobileMoneyPayoutSchema = z.object({
-  requestId: z.string(),
-  batchId: z.string(),
-  amount: z.number().positive(),
-  message: z.string().optional(),
-  productItemId: z.string(),
-  beneficiary: z.object({
-    name: z.string(),
-    email: z.string().email(),
-    phone: z.string(),
-  }),
-})
+async function getDefaultWalletId() {
+  const wallet = await prisma.wallet.findFirst({
+    where: { currency: DEFAULT_WALLET_CURRENCY },
+    orderBy: { createdAt: 'asc' },
+  })
 
-const BankTransferSchema = z.object({
-  requestId: z.string(),
-  batchId: z.string(),
-  amount: z.number().positive(),
-  message: z.string().optional(),
-  productItemId: z.string(),
-  bankId: z.string(),
-  beneficiary: z.object({
-    name: z.string(),
-    email: z.string().email(),
-    accountNumber: z.string(),
-  }),
-})
+  if (!wallet) {
+    throw new Error('No wallet found. Create a wallet before processing payments.')
+  }
+
+  return wallet.id
+}
 
 export async function registerPaymentRoutes(server: import('fastify').FastifyInstance) {
   server.get('/accounts', async () => getAccount())
@@ -64,17 +46,56 @@ export async function registerPaymentRoutes(server: import('fastify').FastifyIns
   })
 
   server.post('/collections/mobile-money', async (request) => {
-    const payload = MobileMoneyCollectionSchema.parse(request.body)
+    const payload = CollectionSchema.parse(request.body)
+    const walletId = await getDefaultWalletId()
+
+    await createLedgerEntry({
+      walletId,
+      amount: payload.amount,
+      currency: DEFAULT_WALLET_CURRENCY,
+      type: 'collection',
+      status: 'pending',
+      referenceId: payload.requestId,
+      provider: 'xente',
+      metadata: payload,
+    })
+
     return postMobileMoneyCollection(payload)
   })
 
   server.post('/payouts/mobile-money', async (request) => {
-    const payload = MobileMoneyPayoutSchema.parse(request.body)
+    const payload = PayoutSchema.parse(request.body)
+    const walletId = await getDefaultWalletId()
+
+    await createLedgerEntry({
+      walletId,
+      amount: payload.amount,
+      currency: DEFAULT_WALLET_CURRENCY,
+      type: 'payout',
+      status: 'pending',
+      referenceId: payload.requestId,
+      provider: 'xente',
+      metadata: payload,
+    })
+
     return postMobileMoneyPayout(payload)
   })
 
   server.post('/payouts/bank', async (request) => {
     const payload = BankTransferSchema.parse(request.body)
+    const walletId = await getDefaultWalletId()
+
+    await createLedgerEntry({
+      walletId,
+      amount: payload.amount,
+      currency: DEFAULT_WALLET_CURRENCY,
+      type: 'payout',
+      status: 'pending',
+      referenceId: payload.requestId,
+      provider: 'xente',
+      metadata: payload,
+    })
+
     return postBankTransfer(payload)
   })
 }
