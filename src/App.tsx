@@ -1,3 +1,4 @@
+import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/clerk-react'
 import { useEffect, useMemo, useState } from 'react'
 
 import { navTabs, type TabKey } from './constants/navTabs'
@@ -10,7 +11,6 @@ import Login from './sections/Login'
 import Overview from './sections/Overview'
 import Wallet from './sections/Wallet'
 import RequireRole from './auth/RequireRole'
-import { useAuth } from './auth/AuthContext'
 
 type LoadState = {
   data: DashboardData | null
@@ -18,12 +18,12 @@ type LoadState = {
   error: string | null
 }
 
-type ViewMode = 'landing' | 'login' | 'dashboard'
+type ViewMode = 'landing' | 'login'
 
 export default function App() {
   const [view, setView] = useState<ViewMode>('landing')
   const [tab, setTab] = useState<TabKey>('overview')
-  const { user, setRole } = useAuth()
+  const { user } = useUser()
   const [state, setState] = useState<LoadState>({
     data: null,
     loading: true,
@@ -31,8 +31,6 @@ export default function App() {
   })
 
   useEffect(() => {
-    if (view !== 'dashboard') return
-
     let isMounted = true
 
     const load = async () => {
@@ -50,7 +48,7 @@ export default function App() {
     return () => {
       isMounted = false
     }
-  }, [view])
+  }, [])
 
   const content = useMemo(() => {
     if (state.loading) {
@@ -97,72 +95,59 @@ export default function App() {
     )
   }, [state, tab])
 
-  if (view === 'landing') {
-    return (
-      <Landing
-        onGetStarted={() => setView('login')}
-        onSignIn={() => setView('login')}
-      />
-    )
-  }
-
-  if (view === 'login') {
-    return <Login onBack={() => setView('landing')} onSuccess={() => setView('dashboard')} />
-  }
-
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="sticky top-0 z-10 border-b border-slate-200 backdrop-blur bg-white/80">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-          <h1 className="font-bold text-xl text-brand-700">Cyanase Collective</h1>
-          <div className="flex gap-6 text-sm">
-            {navTabs.map((tabItem) => (
-              <button
-                key={tabItem.key}
-                onClick={() => setTab(tabItem.key)}
-                className={`font-medium ${tab === tabItem.key ? 'text-brand-700 border-b-2 border-brand-700 pb-1' : 'text-slate-600 hover:text-slate-900'}`}
-              >
-                {tabItem.label}
-              </button>
-            ))}
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right text-xs text-slate-600">
-              <div className="font-semibold text-slate-800">{user.name}</div>
-              <div className="uppercase tracking-wide">{user.role}</div>
+    <>
+      <SignedOut>
+        {view === 'landing' ? (
+          <Landing onGetStarted={() => setView('login')} onSignIn={() => setView('login')} />
+        ) : (
+          <Login onBack={() => setView('landing')} />
+        )}
+      </SignedOut>
+      <SignedIn>
+        <div className="min-h-screen bg-slate-50 text-slate-900">
+          <header className="sticky top-0 z-10 border-b border-slate-200 backdrop-blur bg-white/80">
+            <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+              <h1 className="font-bold text-xl text-brand-700">Cyanase Collective</h1>
+              <div className="flex gap-6 text-sm">
+                {navTabs.map((tabItem) => (
+                  <button
+                    key={tabItem.key}
+                    onClick={() => setTab(tabItem.key)}
+                    className={`font-medium ${tab === tabItem.key ? 'text-brand-700 border-b-2 border-brand-700 pb-1' : 'text-slate-600 hover:text-slate-900'}`}
+                  >
+                    {tabItem.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="text-right text-xs text-slate-600">
+                  <div className="font-semibold text-slate-800">{user?.fullName ?? 'Member'}</div>
+                  <div className="uppercase tracking-wide">{user?.publicMetadata?.role ?? 'member'}</div>
+                </div>
+                <UserButton afterSignOutUrl="/" />
+              </div>
             </div>
-            <label className="text-xs text-slate-600">
-              Role
-              <select
-                className="ml-2 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs"
-                value={user.role}
-                onChange={(event) => setRole(event.target.value as typeof user.role)}
-              >
-                <option value="member">Member</option>
-                <option value="admin">Admin</option>
-              </select>
-            </label>
-            <button className="px-3 py-2 rounded-xl bg-brand-600 text-white text-sm shadow-sm">Add Funds</button>
-          </div>
+          </header>
+
+          <main className="max-w-6xl mx-auto px-4 py-8">
+            <RequireRole role="admin">
+              <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
+                <div className="font-semibold">Admin Controls</div>
+                <p className="text-sm text-amber-800">
+                  This section is visible to admins only. Replace with real admin tooling when backend
+                  authorization is wired.
+                </p>
+              </div>
+            </RequireRole>
+            {content}
+          </main>
+
+          <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-500">
+            Cyanase Collective (c) 2025 - Finance made social - Learn - Save - Invest - Together
+          </footer>
         </div>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        <RequireRole role="admin">
-          <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
-            <div className="font-semibold">Admin Controls</div>
-            <p className="text-sm text-amber-800">
-              This section is visible to admins only. Replace with real admin tooling when backend
-              authorization is wired.
-            </p>
-          </div>
-        </RequireRole>
-        {content}
-      </main>
-
-      <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-500">
-        Cyanase Collective (c) 2025 - Finance made social - Learn - Save - Invest - Together
-      </footer>
-    </div>
+      </SignedIn>
+    </>
   )
 }

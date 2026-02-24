@@ -12,7 +12,7 @@
     "prisma:migrate": "prisma migrate dev"
   },
   "dependencies": {
-    "@fastify/jwt": "^8.0.0",
+    "@clerk/fastify": "^1.0.0",
     "@prisma/client": "^5.19.1",
     "bullmq": "^5.14.4",
     "dotenv": "^16.4.5",

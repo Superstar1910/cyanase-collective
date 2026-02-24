@@ -1,3 +1,4 @@
+import { getAuth } from '@clerk/fastify'
 import { z } from 'zod'
 
 import prisma from '../db'
@@ -7,8 +8,12 @@ const WalletQuerySchema = z.object({
 })
 
 export async function registerAccountRoutes(server: import('fastify').FastifyInstance) {
-  server.get('/wallet', { preHandler: [server.authenticate] }, async (request, reply) => {
-    const userId = request.user.sub
+  server.get('/wallet', async (request, reply) => {
+    const { userId } = getAuth(request)
+
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized' })
+    }
 
     const query = WalletQuerySchema.parse(request.query)
 
@@ -27,8 +32,12 @@ export async function registerAccountRoutes(server: import('fastify').FastifyIns
     }
   })
 
-  server.get('/transactions', { preHandler: [server.authenticate] }, async (request, reply) => {
-    const userId = request.user.sub
+  server.get('/transactions', async (request, reply) => {
+    const { userId } = getAuth(request)
+
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized' })
+    }
 
     const query = WalletQuerySchema.parse(request.query)
 

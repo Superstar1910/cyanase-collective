@@ -1,15 +1,14 @@
-import type { ReactNode } from 'react'
-
-import { useAuth } from './AuthContext'
-import type { Role } from './types'
+import { useUser } from '@clerk/clerk-react'
 
 type RequireRoleProps = {
-  role: Role
-  children: ReactNode
+  role: string
+  children: React.ReactNode
 }
 
 export default function RequireRole({ role, children }: RequireRoleProps) {
-  const { user } = useAuth()
-  if (user.role !== role) return null
+  const { user } = useUser()
+  const currentRole = (user?.publicMetadata?.role as string | undefined) ?? 'member'
+
+  if (currentRole !== role) return null
   return <>{children}</>
 }

@@ -1,3 +1,5 @@
+import { SignInButton, SignUpButton } from '@clerk/clerk-react'
+
 type LandingProps = {
   onGetStarted: () => void
   onSignIn: () => void
@@ -9,10 +11,16 @@ export default function Landing({ onGetStarted, onSignIn }: LandingProps) {
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
         <div className="text-lg font-semibold tracking-wide">Cyanase Collective</div>
         <div className="flex items-center gap-3">
-          <button className="text-sm text-slate-200 hover:text-white" onClick={onSignIn}>Sign in</button>
-          <button className="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white" onClick={onGetStarted}>
-            Get started
-          </button>
+          <SignInButton mode="modal">
+            <button className="text-sm text-slate-200 hover:text-white" onClick={onSignIn}>
+              Sign in
+            </button>
+          </SignInButton>
+          <SignUpButton mode="modal">
+            <button className="rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white" onClick={onGetStarted}>
+              Get started
+            </button>
+          </SignUpButton>
         </div>
       </header>
 
@@ -29,18 +37,22 @@ export default function Landing({ onGetStarted, onSignIn }: LandingProps) {
             allocate to local and global products with mobile money, bank transfers, and stablecoins.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-4">
-            <button
-              className="rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white"
-              onClick={onGetStarted}
-            >
-              Start saving now
-            </button>
-            <button
-              className="rounded-xl border border-white/30 px-5 py-3 text-sm font-semibold text-white"
-              onClick={onSignIn}
-            >
-              Sign in
-            </button>
+            <SignUpButton mode="modal">
+              <button
+                className="rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white"
+                onClick={onGetStarted}
+              >
+                Start saving now
+              </button>
+            </SignUpButton>
+            <SignInButton mode="modal">
+              <button
+                className="rounded-xl border border-white/30 px-5 py-3 text-sm font-semibold text-white"
+                onClick={onSignIn}
+              >
+                Sign in
+              </button>
+            </SignInButton>
           </div>
           <div className="mt-8 grid gap-4 text-sm text-slate-200 md:grid-cols-3">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">

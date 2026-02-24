@@ -4,6 +4,7 @@
 - App: Vite + React + TypeScript
 - Styling: Tailwind CSS
 - Charts: Recharts
+- Auth: Clerk (frontend + backend)
 
 ## Repo Structure
 - Source code is under `src/`
