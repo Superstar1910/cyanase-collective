@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import RequireRole from './auth/RequireRole'
-import { useAuth } from './auth/AuthContext'
 import { navTabs, type TabKey } from './constants/navTabs'
 import { getDashboardData, type DashboardData } from './data/api'
 import Community from './sections/Community'
 import Goals from './sections/Goals'
 import Investments from './sections/Investments'
+import Landing from './sections/Landing'
 import Overview from './sections/Overview'
 import Wallet from './sections/Wallet'
+import RequireRole from './auth/RequireRole'
+import { useAuth } from './auth/AuthContext'
 
 type LoadState = {
   data: DashboardData | null
@@ -16,7 +17,10 @@ type LoadState = {
   error: string | null
 }
 
+type ViewMode = 'landing' | 'dashboard'
+
 export default function App() {
+  const [view, setView] = useState<ViewMode>('landing')
   const [tab, setTab] = useState<TabKey>('overview')
   const { user, setRole } = useAuth()
   const [state, setState] = useState<LoadState>({
@@ -26,6 +30,8 @@ export default function App() {
   })
 
   useEffect(() => {
+    if (view !== 'dashboard') return
+
     let isMounted = true
 
     const load = async () => {
@@ -43,7 +49,7 @@ export default function App() {
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [view])
 
   const content = useMemo(() => {
     if (state.loading) {
@@ -89,6 +95,15 @@ export default function App() {
       </>
     )
   }, [state, tab])
+
+  if (view === 'landing') {
+    return (
+      <Landing
+        onGetStarted={() => setView('dashboard')}
+        onSignIn={() => setView('dashboard')}
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
